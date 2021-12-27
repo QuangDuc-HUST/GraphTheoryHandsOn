@@ -4,18 +4,17 @@ class AlreadySettingUp(Exception):
     pass
 
 
-class Node(object):
+class Vertex(object):
     '''
     Nodes in Graph
     '''
     id = 0
 
-    def __init__(self, weight):
-        self.__adj = []  ## List of Nodes
-        self.__id = Node.id
+    def __init__(self):
+        self.__adj = []  ## List of Vertices
+        self.__id = Vertex.id
         self.__name = str(self.__id)
-        self.__weight = weight
-        Node.id += 1
+        Vertex.id += 1
 
     def get_name(self):
         return self.__name
@@ -36,22 +35,22 @@ class Node(object):
         '''
         Reset id node
         '''
-        Node.id = 0
+        Vertex.id = 0
 
-    def get_adjacenct_nodes(self):
+    def get_adjacenct_vertices(self):
         return self.__adj
     
-    def set_adjacent_nodes(self, lst):
+    def set_adjacent_vertices(self, lst):
         '''
-        Get list of Node type
+        Get list of Vertices type
         '''
         self.__adj  = lst[:] ## Copy 
 
-    def append_adjacent_nodes(self, node):
+    def append_adjacent_nodes(self, vertex):
         '''
-        Append a node in adjacent nodes
+        Append a vertex in adjacent vertices
         '''
-        self.__adj.append(node) ## Not copy
+        self.__adj.append(vertex) ## Not copy
 
     def __str__(self):
         '''
@@ -69,27 +68,66 @@ class Graph(object):
     '''
     Graph
     '''
-    def __init__(self, name):
+
+    def __init__(self, name = 'Franken'):
         self.__name = name
-        self.__nodes = []  ## List of Node types
+        self.__vertices = []  ## List of Vertices types
         self.__isinit = False
+
+    def num_vertices(self):
+        return len(self.__vertices)
+
+    def append_vertices(self, vertex):
+        '''
+        vertex : Vertex type
+        '''
+        self.__vertices.append(vertex)
     
-    def getadjacentmatrix(self, data):
+    def get_vertices(self):
+        return self.__vertices
+
+    def set_vertices(self, lst):
+        '''
+        lst  : list of vertices
+        '''
+        self.__vertices = lst
+    
+
+    def initialization(self, ADJ_matrix, num_V):
         '''
         Setting up Graph
+        ADJ: adjacency list corresponding to V
+        Do not have weight
         '''
         if self.__isinit:
             raise AlreadySettingUp()
         else:
             self.__isinit = True
 
+        ### Init vertices
+
+        #############
+        num_V = len(num_V)
+        ############
+
+        for i in range(num_V):
+            self.append_vertices(Vertex())
+
+
+        for i in range(num_V):
+            for j in range(num_V):
+                if ADJ_matrix[i][j]:
+                    self.__vertices[i].append_adjacent_nodes(self.__vertices[j])
+
+
+        
 
 
     def get_name(self):
         return self.__name
 
-    def get_listnodes(self):
-        return self.__nodes
+    def get_listvertices(self):
+        return self.__vertices
     
 
 
@@ -127,24 +165,22 @@ class Graph(object):
 if __name__ == '__main__': 
     ## Testing
     print('Hello')
-    a = Node()
-    b = Node()
-    print(a.get_id())
-    print(b.get_id())
 
         
     # path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
-    # with open(path) as f:
-    #     n = int(f.readline())
-    #     adj_matrix = []
-    #     for i in range(n):
-    #         line = list(map(int, f.readline().split()))
-    #         adj_matrix.append(line)
+    path = r'D:\GraphTheoryHandsOn\sampledata.txt'
+    with open(path) as f:
+        n = int(f.readline())
+        adj_matrix = []
+        for i in range(n):
+            line = list(map(int, f.readline().split()))
+            adj_matrix.append(line)
 
-    # V = [i for i in range(n)]
-    # ADJ = adj_matrix
+    V = [i for i in range(n)]
+    ADJ = adj_matrix
 
-    # LL = Graph(ADJ, V)
+    LL = Graph()
+    LL.initialization(ADJ, V)
     # print(LL.get_edges())
     # print(LL.get_adj(1))
 
