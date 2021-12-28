@@ -1,134 +1,179 @@
 import sys
 
+
 class AlreadySettingUp(Exception):
-    pass
+	pass
+
+
+class Edge:
+	def __init__(self, start, end, weight):
+		self.__start = start
+		self.__end = end
+		self.__weight = weight
+
+	def __repr__(self):
+		return 'Edge from {} to {}'.format(self.__start, self.__end)
+
+	def set_start_id(self, start):
+		self.__start = start
+
+	def get_start_id(self):
+		return self.__start
+
+	def set_end_id(self, end):
+		self.__end = end
+
+	def get_end_id(self):
+		return self.__end
+
+	def set_weight(self, weight):
+		self.__weight = weight
+
+	def get_weight(self):
+		return self.__weight
 
 
 class Vertex(object):
-    '''
-    Nodes in Graph
-    '''
-    id = 0
+	"""
+	Nodes in Graph
+	"""
 
-    def __init__(self):
-        self.__adj = []  ## List of Vertices
-        self.__id = Vertex.id
-        self.__name = str(self.__id)
-        Vertex.id += 1
+	id = 0
 
-    def get_name(self):
-        return self.__name
+	def __init__(self):
+		self.__adj = []  # List of Vertices
+		self.__id = Vertex.id
+		self.__name = str(self.__id)
+		self.__weight = None
+		Vertex.id += 1
 
-    def set_name(self , name):
-        self.__name = name
+	def get_name(self):
+		return self.__name
 
-    def get_weight(self):
-        return self.__weight
+	def set_name(self, name):
+		self.__name = name
 
-    def set_weight(self, weight):
-        self.__weight = weight
-        
-    def get_id(self):
-        return self.__id
+	def get_weight(self):
+		return self.__weight
 
-    def reset_id(self):
-        '''
-        Reset id node
-        '''
-        Vertex.id = 0
+	def set_weight(self, weight):
+		self.__weight = weight
 
-    def get_adjacenct_vertices(self):
-        return self.__adj
-    
-    def set_adjacent_vertices(self, lst):
-        '''
-        Get list of Vertices type
-        '''
-        self.__adj  = lst[:] ## Copy 
+	def get_id(self):
+		return self.__id
 
-    def append_adjacent_nodes(self, vertex):
-        '''
-        Append a vertex in adjacent vertices
-        '''
-        self.__adj.append(vertex) ## Not copy
+	def reset_id(self):
+		"""
+		Reset id node
+		"""
 
-    def __str__(self):
-        '''
-        Print display
-        '''
-        return f'Node {self.__name}'
-    
-    def __repr__(self) :
-        '''
-        List display
-        '''
-        return f'Node {self.__name}'
+		Vertex.id = 0
+
+	def get_adjacenct_vertices(self):
+		return self.__adj
+
+	def set_adjacent_vertices(self, lst):
+		"""
+		Get list of Vertices type
+		"""
+		self.__adj = lst[:]  # Copy
+
+	def append_adjacent_nodes(self, vertex):
+		"""
+		Append a vertex in adjacent vertices
+		"""
+		self.__adj.append(vertex)  # Not copy
+
+	def delete_adjacent_nodes(self, vertex):
+		self.__adj.remove(vertex)
+
+	def __str__(self):
+		"""
+		Print display
+		"""
+		return f'Node {self.__name}'
+
+	def __repr__(self):
+		"""
+		List display
+		"""
+		return f'Node {self.__name}'
+
 
 class Graph(object):
-    '''
-    Graph
-    '''
+	"""
+	Graph
+	"""
 
-    def __init__(self, name = 'Franken'):
-        self.__name = name
-        self.__vertices = []  ## List of Vertices types
-        self.__isinit = False
+	def __init__(self, name='Franken'):
+		self.__name = name
+		self.__vertices = []  # List of Vertices types
+		self.__edges = {}
+		self.__isinit = False
 
-    def num_vertices(self):
-        return len(self.__vertices)
+	def num_vertices(self):
+		return len(self.__vertices)
 
-    def append_vertices(self, vertex):
-        '''
-        vertex : Vertex type
-        '''
-        self.__vertices.append(vertex)
-    
-    def get_vertices(self):
-        return self.__vertices
+	def append_vertices(self, vertex):
+		"""
+		vertex : Vertex type
+		"""
+		self.__vertices.append(vertex)
 
-    def set_vertices(self, lst):
-        '''
-        lst  : list of vertices
-        '''
-        self.__vertices = lst
-    
+	def append_edges(self, id, weight):
+		self.__edges[id] = Edge(*id, weight)
 
-    def initialization(self, ADJ_matrix, num_V):
-        '''
-        Setting up Graph
-        ADJ: adjacency list corresponding to V
-        Do not have weight
-        '''
-        if self.__isinit:
-            raise AlreadySettingUp()
-        else:
-            self.__isinit = True
+	def get_vertices(self):
+		return self.__vertices
 
-        ### Init vertices
+	def set_vertices(self, lst):
+		"""
+		lst  : list of vertices
+		"""
+		self.__vertices = lst
 
-        #############
-        num_V = len(num_V)
-        ############
+	def initialization(self, ADJ_matrix, num_V):
+		"""
+		Setting up Graph
+		ADJ: adjacency list corresponding to V
+		Do not have weight
+		"""
+		if self.__isinit:
+			raise AlreadySettingUp()
+		else:
+			self.__isinit = True
 
-        for i in range(num_V):
-            self.append_vertices(Vertex())
+		# Init vertices
 
+		#############
+		num_V = len(num_V)
+		############
 
-        for i in range(num_V):
-            for j in range(num_V):
-                if ADJ_matrix[i][j]:
-                    self.__vertices[i].append_adjacent_nodes(self.__vertices[j])
+		for i in range(num_V):
+			self.append_vertices(Vertex())
 
+		for i in range(num_V):
+			for j in range(num_V):
+				if ADJ_matrix[i][j]:
+					# adding adj
+					self.__vertices[i].append_adjacent_nodes(self.__vertices[j])
 
-        
+					# adding edge
+					self.append_edges((self.__vertices[i], self.__vertices[j]), ADJ_matrix[i][j])
 
+	def delete_edge(self, start, end):
+		del self.__edges[(start, end)]
+		self.__vertices[start].delete_adjacent_nodes(self.__vertices[end])
+		self.__vertices[end].delete_adjacent_nodes(self.__vertices[start])
 
-    def get_name(self):
-        return self.__name
+	def get_name(self):
+		return self.__name
 
-    def get_listvertices(self):
-        return self.__vertices
-    
+	def get_list_of_vertices(self):
+		return self.__vertices
+
+	def get_list_of_edges(self):
+		return self.__edges
 
 
 # class Graph:
@@ -160,27 +205,23 @@ class Graph(object):
 # 	def check_cycle(self):
 # 		pass
 
-
-
 if __name__ == '__main__': 
-    ## Testing
-    print('Hello')
+	# Testing
+	print('Hello, Im Nguyen Quang Duc and I love Nguyen Phuong Hang')
 
-        
-    # path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
-    path = r'D:\GraphTheoryHandsOn\sampledata.txt'
-    with open(path) as f:
-        n = int(f.readline())
-        adj_matrix = []
-        for i in range(n):
-            line = list(map(int, f.readline().split()))
-            adj_matrix.append(line)
+	path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
+	# path = r'D:\GraphTheoryHandsOn\sampledata.txt'
+	with open(path) as f:
+		n = int(f.readline())
+		adj_matrix = []
+		for i in range(n):
+			line = list(map(int, f.readline().split()))
+			adj_matrix.append(line)
 
-    V = [i for i in range(n)]
-    ADJ = adj_matrix
+	V = [i for i in range(n)]
+	ADJ = adj_matrix
 
-    LL = Graph()
-    LL.initialization(ADJ, V)
-    # print(LL.get_edges())
-    # print(LL.get_adj(1))
-
+	LL = Graph()
+	LL.initialization(ADJ, V)
+	print(LL.get_list_of_vertices())
+	print(LL.get_list_of_edges())
