@@ -34,7 +34,8 @@ class Edge:
 
 	def get_weight(self):
 		return self.__weight
-	
+
+
 class Vertex(object):
 	"""
 	Vertices in Graph
@@ -102,6 +103,7 @@ class Graph(object):
 
 	def __init__(self, name='Franken'):
 		self.__name = name
+		# Change vertices to dict (like hash table) 
 		self.__vertices = []  # List of Vertices types
 		self.__edges = {}
 		self.__isinit = False
