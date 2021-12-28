@@ -1,6 +1,6 @@
-import sys
-
-
+#
+# Graph DS
+#
 class AlreadySettingUp(Exception):
 	pass
 
@@ -12,6 +12,9 @@ class Edge:
 		self.__weight = weight
 
 	def __repr__(self):
+		return 'Edge from {} to {}'.format(self.__start, self.__end)
+
+	def __str__(self):
 		return 'Edge from {} to {}'.format(self.__start, self.__end)
 
 	def set_start_id(self, start):
@@ -31,11 +34,10 @@ class Edge:
 
 	def get_weight(self):
 		return self.__weight
-
-
+	
 class Vertex(object):
 	"""
-	Nodes in Graph
+	Vertices in Graph
 	"""
 
 	id = 0
@@ -62,13 +64,6 @@ class Vertex(object):
 	def get_id(self):
 		return self.__id
 
-	def reset_id(self):
-		"""
-		Reset id node
-		"""
-
-		Vertex.id = 0
-
 	def get_adjacenct_vertices(self):
 		return self.__adj
 
@@ -78,13 +73,13 @@ class Vertex(object):
 		"""
 		self.__adj = lst[:]  # Copy
 
-	def append_adjacent_nodes(self, vertex):
+	def append_adjacent_vertex(self, vertex):
 		"""
 		Append a vertex in adjacent vertices
 		"""
 		self.__adj.append(vertex)  # Not copy
 
-	def delete_adjacent_nodes(self, vertex):
+	def delete_adjacent_vertex(self, vertex):
 		self.__adj.remove(vertex)
 
 	def __str__(self):
@@ -111,8 +106,19 @@ class Graph(object):
 		self.__edges = {}
 		self.__isinit = False
 
+	def get_name(self):
+		return self.__name
+
+	def get_list_of_vertices(self):
+		return self.__vertices
+
+	def get_list_of_edges(self):
+		return self.__edges
+
+
 	def num_vertices(self):
 		return len(self.__vertices)
+
 
 	def append_vertices(self, vertex):
 		"""
@@ -120,8 +126,24 @@ class Graph(object):
 		"""
 		self.__vertices.append(vertex)
 
+	def delete_vertices(self, vertex):
+		"""
+		Costly , remove adj list, edge ...
+		"""
+		pass
+
 	def append_edges(self, id, weight):
+		"""
+		id : [] list of 2 nodes
+		weight : lu
+		"""
 		self.__edges[id] = Edge(*id, weight)
+
+
+	def delete_edge(self, start, end):
+		del self.__edges[(start, end)]
+		self.__vertices[start].delete_adjacent_vertex(self.__vertices[end])
+		self.__vertices[end].delete_adjacent_vertex(self.__vertices[start])
 
 	def get_vertices(self):
 		return self.__vertices
@@ -136,18 +158,14 @@ class Graph(object):
 		"""
 		Setting up Graph
 		ADJ: adjacency list corresponding to V
-		Do not have weight
+		num_V : int
 		"""
+
 		if self.__isinit:
 			raise AlreadySettingUp()
 		else:
 			self.__isinit = True
 
-		# Init vertices
-
-		#############
-		num_V = len(num_V)
-		############
 
 		for i in range(num_V):
 			self.append_vertices(Vertex())
@@ -156,61 +174,18 @@ class Graph(object):
 			for j in range(num_V):
 				if ADJ_matrix[i][j]:
 					# adding adj
-					self.__vertices[i].append_adjacent_nodes(self.__vertices[j])
+					self.__vertices[i].append_adjacent_vertex(self.__vertices[j])
 
 					# adding edge
 					self.append_edges((self.__vertices[i], self.__vertices[j]), ADJ_matrix[i][j])
 
-	def delete_edge(self, start, end):
-		del self.__edges[(start, end)]
-		self.__vertices[start].delete_adjacent_nodes(self.__vertices[end])
-		self.__vertices[end].delete_adjacent_nodes(self.__vertices[start])
-
-	def get_name(self):
-		return self.__name
-
-	def get_list_of_vertices(self):
-		return self.__vertices
-
-	def get_list_of_edges(self):
-		return self.__edges
-
-
-# class Graph:
-# 	def __init__(self, adj_matrix, vertices):
-# 		self.vertices = vertices
-# 		self.adj_of_vertices = {i: [] for i in self.vertices}
-# 		self.edges = {}
-# 		for i in range(len(self.vertices)):
-# 			for j in range(len(self.vertices)):
-
-# 				if adj_matrix[i][j] != 0:
-# 					self.edges[self.vertices[i], self.vertices[j]] = adj_matrix[i][j]
-
-# 					if i not in self.adj_of_vertices[j]:
-# 						self.adj_of_vertices[j].append(i)
-
-# 					if j not in self.adj_of_vertices[i]:
-# 						self.adj_of_vertices[i].append(j)
-
-# 		self.cycle = False
-
-# 	def get_edges(self):
-# 		return self.edges
-
-# 	def get_adj(self, x):
-# 		print(self.adj_of_vertices)
-# 		return self.adj_of_vertices[x]
-
-# 	def check_cycle(self):
-# 		pass
 
 if __name__ == '__main__': 
 	# Testing
-	print('Hello, Im Nguyen Quang Duc and I love Nguyen Phuong Hang')
+	print('Hello, Trang lu Van Anh Ngan')
 
-	path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
-	# path = r'D:\GraphTheoryHandsOn\sampledata.txt'
+	# path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
+	path = r'D:\GraphTheoryHandsOn\sampledata.txt'
 	with open(path) as f:
 		n = int(f.readline())
 		adj_matrix = []
@@ -218,10 +193,9 @@ if __name__ == '__main__':
 			line = list(map(int, f.readline().split()))
 			adj_matrix.append(line)
 
-	V = [i for i in range(n)]
 	ADJ = adj_matrix
 
 	LL = Graph()
-	LL.initialization(ADJ, V)
+	LL.initialization(ADJ, n)
 	print(LL.get_list_of_vertices())
 	print(LL.get_list_of_edges())
