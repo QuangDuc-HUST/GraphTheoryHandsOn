@@ -1,2 +1,2 @@
-from DataStructure import Graph
+from DataStructures import Graph
 
