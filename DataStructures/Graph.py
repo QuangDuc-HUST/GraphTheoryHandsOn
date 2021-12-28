@@ -5,7 +5,7 @@ class AlreadySettingUp(Exception):
 	pass
 
 
-class Edge:
+class Edge(object):
 	def __init__(self, start, end, weight):
 		self.__start = start
 		self.__end = end
