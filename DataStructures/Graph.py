@@ -147,14 +147,6 @@ class Graph(object):
 		self.__vertices[start].delete_adjacent_vertex(self.__vertices[end])
 		self.__vertices[end].delete_adjacent_vertex(self.__vertices[start])
 
-	def get_vertices(self):
-		return self.__vertices
-
-	def set_vertices(self, lst):
-		"""
-		lst  : list of vertices
-		"""
-		self.__vertices = lst
 
 	def initialization(self, ADJ_matrix, num_V):
 		"""
