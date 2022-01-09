@@ -3,6 +3,8 @@
 #
 # Interaction for outside world , use int or string only.
 #
+from copy import deepcopy
+
 class AlreadySettingUp(Exception):
     pass
 
@@ -169,51 +171,84 @@ class Graph(object):
         return self.__edges[(self.get_vertex(vertex1), self.get_vertex(vertex2))]
 
 
-    def initialization(self, ADJ_matrix, num_V, kind = 'Adj'):
+    def init_adj(self, num_V, ADJ_matrix):
         """
-        Setting up Graph
-        ADJ: adjacency list corresponding to V
+        Setting up Graph with adjacency matrix
         num_V : int
+        ADJ_matrix: nested list of ints
         """
 
         if self.__isinit:
             raise AlreadySettingUp()
 
-        if kind == 'Adj':
-            self.__isinit = True
-            for i in range(num_V):
-                self._append_vertex(Vertex())
+        self.__isinit = True
 
-            for i in range(num_V):
-                for j in range(num_V):
-                    if ADJ_matrix[i][j]:
-                        self._append_edge((self.__vertices[i], self.__vertices[j]), ADJ_matrix[i][j])
+        for i in range(num_V):
+            self._append_vertex(Vertex())
 
+        for i in range(num_V):
+            for j in range(num_V):
+                if ADJ_matrix[i][j]:
+                    self._append_edge((self.__vertices[i], self.__vertices[j]), ADJ_matrix[i][j])
+
+
+    def init_inc(self, num_V, num_E, INC_matrix):
+        """
+        Setting up Graph with adjacency matrix
+        num_V : int
+        ADJ_matrix: nested list of ints
+        """
+        if self.__isinit:
+            raise AlreadySettingUp()
+
+        self.__isinit = True
+
+        for i in range(num_V):
+            self._append_vertex(Vertex())
+        
+        pass
+    
 
 if __name__ == '__main__': 
     # Testing
-
     # path = 'C:\\Users\\Franken\\PycharmProjects\\nqd_colab_1\\GraphTheoryHandsOn\\sampledata.txt'
-    path = r'D:\GraphTheoryHandsOn\sampledata_adjacencymatrix.txt'
+
+    # For adjacency graphs
+    # Cons: Can not detect multiple graph
+    # Pros: 
+    # path = r'D:\GraphTheoryHandsOn\sampledata_adjacencymatrix.txt'
+    # with open(path) as f:
+    #     n = int(f.readline())
+    #     adj_matrix = []
+    #     for i in range(n):
+    #         line = list(map(int, f.readline().split()))
+    #         adj_matrix.append(line)
+
+    # ADJ = adj_matrix
+    # LL = Graph()
+    # LL.init_adj(n, ADJ) 
+    # print(LL.get_list_of_vertices())
+    # print(LL.get_list_of_edges())
+    # print(LL.num_edges())
+    # print(LL.num_vertices())
+    # print(LL.get_vertex(0))
+    # print(LL.get_edge(2, 3))
+    # print(LL.get_vertex(2).get_adjacenct_vertices())
+    # print('Delete edge 2 -> 3')
+    # LL.delete_edge(2, 3)
+    # print(LL.get_list_of_edges())
+    # print(LL.get_vertex(2).get_adjacenct_vertices())
+
+    # For incidence matrix
+    #  Cons: Only for undirected graph
+    #  Pros: Multiple graph
+    #        Loops
+    path = r'D:\GraphTheoryHandsOn\sampledata_incidencematrix.txt'
     with open(path) as f:
-        n = int(f.readline())
-        adj_matrix = []
-        for i in range(n):
-            line = list(map(int, f.readline().split()))
-            adj_matrix.append(line)
-
-    ADJ = adj_matrix
-
+        num_vertices, num_edges = [int(x) for x in f.readline().split()]
+        # print(num_vertices, num_edges)
+        inc_matrix = []
+        for _ in range(num_vertices):
+            inc_matrix.append([int(x) for x in f.readline().split()])
+        # print(inc_matrix)
     LL = Graph()
-    LL.initialization(ADJ, n)
-    print(LL.get_list_of_vertices())
-    print(LL.get_list_of_edges())
-    print(LL.num_edges())
-    print(LL.num_vertices())
-    print(LL.get_vertex(0))
-    print(LL.get_edge(2, 3))
-    print(LL.get_vertex(2).get_adjacenct_vertices())
-    print('Delete edge 2 -> 3')
-    LL.delete_edge(2, 3)
-    print(LL.get_list_of_edges())
-    print(LL.get_vertex(2).get_adjacenct_vertices())
